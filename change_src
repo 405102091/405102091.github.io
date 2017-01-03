@@ -1,0 +1,19 @@
+#!/bin/bash
+# do not exit, copy a backup
+SRC_DIR="/etc/apt/sources.list"
+SRC_DIR_OLD="/etc/apt/sources.list.old"
+if [ ! -f $SRC_DIR_OLD ]; then
+    echo "first time run this script, backup the sources.list"
+    cp $SRC_DIR $SRC_DIR_OLD
+else
+    echo "restore the sources.list"
+    cp $SRC_DIR_OLD $SRC_DIR
+fi
+read -p "Paste the ubuntu src:(Enter to exit)" UB_NEW_SRC
+if test -z "$UB_NEW_SRC"; then
+    echo "do not enter a new src, exit"
+    exit
+fi
+sed "s#`cat $SRC_DIR | sed "s/^deb \(.*\) .* main .*/\1/p" -n | head -n 1`#$UB_NEW_SRC#g" -i $SRC_DIR
+cat $SRC_DIR | grep $UB_NEW_SRC | head -n 1
+#apt update
